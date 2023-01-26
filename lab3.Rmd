@@ -1,0 +1,83 @@
+---
+title: "Lab 3"
+author: "Hannah Irish"
+date: "2023-01-26"
+output: html_document
+---
+
+```{r setup, echo=TRUE, warning=FALSE, message=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(tidymodels)
+library(palmerpenguins)
+library(GGally)
+library(jtools)
+library(AICcmodavg)
+```
+
+```{css, echo=FALSE}
+h1 {
+  text-align: center;
+}
+```
+
+# Pseudocode
+ * Examine our data (plots, tables, summary stats)
+ * Identify a question
+ * Wrangle the data (if necessary)
+ * Identify some candidate models
+ * Select among candidate models using AIC/BIC
+ * Select among candidate models using k-fold cross validation
+ * Select among candidate models using area under Receiver Operating Characteristic Curve
+  
+ 
+```{r, warning=FALSE, message=FALSE}
+
+GGally::ggpairs(penguins %>% select(species, bill_length_mm:sex), 
+                aes(color=species))
+```
+
+
+```{r}
+#class(penguins$species)
+#evels(penguins$species)
+
+adelie_chinstrap <- penguins %>%
+  filter(species %in% c("Adelie", "Chinstrap")) %>%
+  mutate(species = fct_drop(species)) %>% ##drop any levels that no longer exist
+  select(-year) %>%
+  drop_na()
+
+
+
+```
+## Let's check out the trends across variables
+
+```{r}
+ggplot(data = adelie_chinstrap, aes(x=body_mass_g, y=flipper_length_mm)) +
+  geom_point(aes(color=sex, shape = island))+
+  facet_wrap(~ species)
+
+ggplot(data = adelie_chinstrap, aes(x = body_mass_g, y=bill_length_mm)) +
+  geom_point(aes(color=sex, shape = island)) +
+  facet_wrap(~ species)
+```
+
+## Let's do some binary logistic regression
+
+```{r}
+f1 <- species ~ body_mass_g + flipper_length_mm + sex
+
+ad_chin_blr1 <- glm(f1, data=adelie_chinstrap, family="binomial")
+  
+  
+```
+
+
+
+
+
+
+
+
+
